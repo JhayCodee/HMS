@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using MyHostel.Application.Common.Validations;
 using System.Reflection;
 
 namespace MyHostel.Application.Extensions;
@@ -17,7 +19,10 @@ public static class ServiceCollectionExtensions
         );
 
         // FluentValidation desde el ensamblado actual
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services
+        .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+        .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
 
         return services;
     }
