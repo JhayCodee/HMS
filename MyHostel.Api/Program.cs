@@ -1,14 +1,28 @@
 using MyHostel.Infrastructure.Extensions;
 using MyHostel.Application.Extensions;
-
+using MyHostel.Api.Middlewares;
+using Serilog;
 using Microsoft.OpenApi.Models;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+
+Log.Information("Inicializando MyHostel API...");
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar los servicios de infraestructura (DbContext, etc.)
+// Usar Serilog como logger
+builder.Host.UseSerilog();
+
+// Agregar los servicios de infraestructura y aplicación
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
-
 
 // Agregar controladores
 builder.Services.AddControllers();
@@ -22,7 +36,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configuración del middleware
+// Middleware para manejo de excepciones
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+
+// Configuración de entorno
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,9 +48,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

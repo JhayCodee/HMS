@@ -23,6 +23,10 @@ public static class ServiceCollectionExtensions
         .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
         .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+        // Registro del comportamiento de validación
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
 
         return services;
     }
