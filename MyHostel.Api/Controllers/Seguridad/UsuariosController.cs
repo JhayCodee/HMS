@@ -1,9 +1,10 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyHostel.Api.Responses;
 using MyHostel.Application.Seguridad.Usuario.Commands.CrearUsuario;
 using MyHostel.Application.Seguridad.Usuario.Dtos;
 using MyHostel.Application.Seguridad.Usuario.Queries.ObtenerUsuarioPorId;
-using MyHostel.Api.Responses;
 
 namespace MyHostel.Api.Controllers.Seguridad;
 
@@ -32,6 +33,7 @@ public class UsuariosController(IMediator mediator) : ControllerBase
     /// <param name="id">Identificador único del usuario</param>
     /// <returns>El usuario si existe</returns>
     [HttpGet("{id:guid}")]
+    [Authorize]
     [ProducesResponseType(typeof(ApiResponse<UsuarioDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]

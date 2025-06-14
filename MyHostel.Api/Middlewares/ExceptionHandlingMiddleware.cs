@@ -48,6 +48,16 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                 "Solicitud incorrecta",
                 br.Message));
         }
+        catch (UnauthorizedAccessException ua)
+        {
+            log.LogWarning(ua, "UnauthorizedException capturada: {ErrorMessage}", ua.Message);
+            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            await ctx.Response.WriteAsJsonAsync(new ApiErrorResponse(
+                StatusCodes.Status401Unauthorized,
+                "No autorizado",
+                ua.Message
+            ));
+        }
         catch (Exception ex)
         {
             log.LogError(ex, "Error inesperado");
