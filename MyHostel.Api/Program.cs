@@ -1,8 +1,9 @@
-using MyHostel.Infrastructure.Extensions;
-using MyHostel.Application.Extensions;
-using MyHostel.Api.Middlewares;
-using Serilog;
 using Microsoft.OpenApi.Models;
+using MyHostel.Api.Middlewares;
+using MyHostel.Api.Swagger;
+using MyHostel.Application.Extensions;
+using MyHostel.Infrastructure.Extensions;
+using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -32,6 +33,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyHostel API", Version = "v1" });
+
+    // Registrar filtro de respuestas comunes
+    c.OperationFilter<GlobalResponsesOperationFilter>();
 });
 
 var app = builder.Build();
